@@ -1,0 +1,70 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\repos\\Archivebate_Downloader\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{A0094374-1995-41E7-B15B-595A87A13CF8}|Archivebate_Downloader\\Archivebate_Downloader.csproj|C:\\repos\\Archivebate_Downloader\\archivebate_downloader\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{A0094374-1995-41E7-B15B-595A87A13CF8}|Archivebate_Downloader\\Archivebate_Downloader.csproj|solutionrelative:archivebate_downloader\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A0094374-1995-41E7-B15B-595A87A13CF8}|Archivebate_Downloader\\Archivebate_Downloader.csproj|C:\\repos\\Archivebate_Downloader\\archivebate_downloader\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A0094374-1995-41E7-B15B-595A87A13CF8}|Archivebate_Downloader\\Archivebate_Downloader.csproj|solutionrelative:archivebate_downloader\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A0094374-1995-41E7-B15B-595A87A13CF8}|Archivebate_Downloader\\Archivebate_Downloader.csproj|C:\\repos\\Archivebate_Downloader\\archivebate_downloader\\form1.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A0094374-1995-41E7-B15B-595A87A13CF8}|Archivebate_Downloader\\Archivebate_Downloader.csproj|solutionrelative:archivebate_downloader\\form1.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Form1.Designer.cs",
+              "DocumentMoniker": "C:\\repos\\Archivebate_Downloader\\Archivebate_Downloader\\Form1.Designer.cs",
+              "RelativeDocumentMoniker": "Archivebate_Downloader\\Form1.Designer.cs",
+              "ToolTip": "C:\\repos\\Archivebate_Downloader\\Archivebate_Downloader\\Form1.Designer.cs",
+              "RelativeToolTip": "Archivebate_Downloader\\Form1.Designer.cs",
+              "ViewState": "AQIAAHUAAAAAAAAAAAAswIgAAAAmAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-05-01T09:58:20.363Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Form1.cs [\uB514\uC790\uC778]",
+              "DocumentMoniker": "C:\\repos\\Archivebate_Downloader\\Archivebate_Downloader\\Form1.cs",
+              "RelativeDocumentMoniker": "Archivebate_Downloader\\Form1.cs",
+              "ToolTip": "C:\\repos\\Archivebate_Downloader\\Archivebate_Downloader\\Form1.cs [\uB514\uC790\uC778]",
+              "RelativeToolTip": "Archivebate_Downloader\\Form1.cs [\uB514\uC790\uC778]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-05-01T08:00:35.674Z",
+              "EditorCaption": " [\uB514\uC790\uC778]"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Form1.cs",
+              "DocumentMoniker": "C:\\repos\\Archivebate_Downloader\\Archivebate_Downloader\\Form1.cs",
+              "RelativeDocumentMoniker": "Archivebate_Downloader\\Form1.cs",
+              "ToolTip": "C:\\repos\\Archivebate_Downloader\\Archivebate_Downloader\\Form1.cs",
+              "RelativeToolTip": "Archivebate_Downloader\\Form1.cs",
+              "ViewState": "AQIAACwAAAAAAAAAAAAAAD4AAABZAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-05-01T08:04:44.818Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

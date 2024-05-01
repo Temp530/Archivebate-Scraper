@@ -1,0 +1,17 @@
+{
+  "version": 2,
+  "dgSpecHash": "gYYpHhKcK0l3ZmlIxjn1FE7ia2ZoPxeMxMR93IfwVIv+fMIFbqkCZO674CrCILQFK4QVQslnS8sHnV5av+7FbQ==",
+  "success": true,
+  "projectFilePath": "C:\\repos\\Archivebate-Scraper\\Archivebate-Scraper\\Archivebate-Scraper.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\dhtpd\\.nuget\\packages\\dotnetseleniumextras.waithelpers\\3.11.0\\dotnetseleniumextras.waithelpers.3.11.0.nupkg.sha512",
+    "C:\\Users\\dhtpd\\.nuget\\packages\\microsoft.netcore.platforms\\1.1.0\\microsoft.netcore.platforms.1.1.0.nupkg.sha512",
+    "C:\\Users\\dhtpd\\.nuget\\packages\\microsoft.netcore.targets\\1.1.0\\microsoft.netcore.targets.1.1.0.nupkg.sha512",
+    "C:\\Users\\dhtpd\\.nuget\\packages\\newtonsoft.json\\13.0.1\\newtonsoft.json.13.0.1.nupkg.sha512",
+    "C:\\Users\\dhtpd\\.nuget\\packages\\selenium.webdriver\\4.20.0\\selenium.webdriver.4.20.0.nupkg.sha512",
+    "C:\\Users\\dhtpd\\.nuget\\packages\\system.runtime\\4.3.0\\system.runtime.4.3.0.nupkg.sha512",
+    "C:\\Users\\dhtpd\\.nuget\\packages\\system.threading.tasks\\4.3.0\\system.threading.tasks.4.3.0.nupkg.sha512",
+    "C:\\Users\\dhtpd\\.nuget\\packages\\system.threading.tasks.extensions\\4.5.4\\system.threading.tasks.extensions.4.5.4.nupkg.sha512"
+  ],
+  "logs": []
+}

@@ -1,0 +1,52 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\repos\\Archivebate-Scraper\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{201381D1-883C-4C24-84C1-62A7AC39C989}|Archivebate-Scraper\\Archivebate-Scraper.csproj|c:\\repos\\archivebate-scraper\\archivebate-scraper\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{201381D1-883C-4C24-84C1-62A7AC39C989}|Archivebate-Scraper\\Archivebate-Scraper.csproj|solutionrelative:archivebate-scraper\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{201381D1-883C-4C24-84C1-62A7AC39C989}|Archivebate-Scraper\\Archivebate-Scraper.csproj|C:\\repos\\Archivebate-Scraper\\archivebate-scraper\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{201381D1-883C-4C24-84C1-62A7AC39C989}|Archivebate-Scraper\\Archivebate-Scraper.csproj|solutionrelative:archivebate-scraper\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Form1.cs [\uB514\uC790\uC778]",
+              "DocumentMoniker": "C:\\repos\\Archivebate-Scraper\\Archivebate-Scraper\\Form1.cs",
+              "RelativeDocumentMoniker": "Archivebate-Scraper\\Form1.cs",
+              "ToolTip": "C:\\repos\\Archivebate-Scraper\\Archivebate-Scraper\\Form1.cs [\uB514\uC790\uC778]",
+              "RelativeToolTip": "Archivebate-Scraper\\Form1.cs [\uB514\uC790\uC778]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-05-01T12:50:58.563Z",
+              "EditorCaption": " [\uB514\uC790\uC778]"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Form1.cs",
+              "DocumentMoniker": "C:\\repos\\Archivebate-Scraper\\Archivebate-Scraper\\Form1.cs",
+              "RelativeDocumentMoniker": "Archivebate-Scraper\\Form1.cs",
+              "ToolTip": "C:\\repos\\Archivebate-Scraper\\Archivebate-Scraper\\Form1.cs",
+              "RelativeToolTip": "Archivebate-Scraper\\Form1.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAgAAAA8AAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-05-01T12:48:26.018Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
