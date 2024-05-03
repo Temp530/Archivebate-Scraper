@@ -34,9 +34,20 @@
             textBoxPageFrom = new TextBox();
             textBoxPageTo = new TextBox();
             buttonDownload = new Button();
-            textBoxURLs = new TextBox();
+            textBoxSuccessURLs = new TextBox();
             progressBar1 = new ProgressBar();
             label3 = new Label();
+            labelResult = new Label();
+            label4 = new Label();
+            textBoxCounterCount = new TextBox();
+            checkBoxHeadless = new CheckBox();
+            label5 = new Label();
+            textBoxScraperCount = new TextBox();
+            tableLayoutPanel1 = new TableLayoutPanel();
+            textBoxFailURLs = new TextBox();
+            label7 = new Label();
+            label6 = new Label();
+            tableLayoutPanel1.SuspendLayout();
             SuspendLayout();
             // 
             // label1
@@ -89,21 +100,21 @@
             buttonDownload.UseVisualStyleBackColor = true;
             buttonDownload.Click += buttonDownload_Click;
             // 
-            // textBoxURLs
+            // textBoxSuccessURLs
             // 
-            textBoxURLs.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            textBoxURLs.Location = new Point(0, 114);
-            textBoxURLs.Multiline = true;
-            textBoxURLs.Name = "textBoxURLs";
-            textBoxURLs.ReadOnly = true;
-            textBoxURLs.ScrollBars = ScrollBars.Both;
-            textBoxURLs.Size = new Size(495, 462);
-            textBoxURLs.TabIndex = 3;
+            textBoxSuccessURLs.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            textBoxSuccessURLs.Location = new Point(69, 3);
+            textBoxSuccessURLs.Multiline = true;
+            textBoxSuccessURLs.Name = "textBoxSuccessURLs";
+            textBoxSuccessURLs.ReadOnly = true;
+            textBoxSuccessURLs.ScrollBars = ScrollBars.Both;
+            textBoxSuccessURLs.Size = new Size(399, 153);
+            textBoxSuccessURLs.TabIndex = 3;
             // 
             // progressBar1
             // 
             progressBar1.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            progressBar1.Location = new Point(12, 79);
+            progressBar1.Location = new Point(12, 200);
             progressBar1.Name = "progressBar1";
             progressBar1.Size = new Size(471, 29);
             progressBar1.TabIndex = 4;
@@ -117,14 +128,123 @@
             label3.TabIndex = 5;
             label3.Text = "~";
             // 
+            // labelResult
+            // 
+            labelResult.AutoSize = true;
+            labelResult.Dock = DockStyle.Bottom;
+            labelResult.Location = new Point(0, 556);
+            labelResult.Name = "labelResult";
+            labelResult.Size = new Size(131, 20);
+            labelResult.TabIndex = 6;
+            labelResult.Text = "Success: 0 / Fail: 0";
+            // 
+            // label4
+            // 
+            label4.AutoSize = true;
+            label4.Location = new Point(12, 81);
+            label4.Name = "label4";
+            label4.Size = new Size(103, 20);
+            label4.TabIndex = 7;
+            label4.Text = "Page Counter";
+            // 
+            // textBoxCounterCount
+            // 
+            textBoxCounterCount.Location = new Point(12, 104);
+            textBoxCounterCount.Name = "textBoxCounterCount";
+            textBoxCounterCount.Size = new Size(125, 27);
+            textBoxCounterCount.TabIndex = 8;
+            textBoxCounterCount.Text = "2";
+            // 
+            // checkBoxHeadless
+            // 
+            checkBoxHeadless.AutoSize = true;
+            checkBoxHeadless.Checked = true;
+            checkBoxHeadless.CheckState = CheckState.Checked;
+            checkBoxHeadless.Location = new Point(12, 170);
+            checkBoxHeadless.Name = "checkBoxHeadless";
+            checkBoxHeadless.Size = new Size(91, 24);
+            checkBoxHeadless.TabIndex = 9;
+            checkBoxHeadless.Text = "Headless";
+            checkBoxHeadless.UseVisualStyleBackColor = true;
+            // 
+            // label5
+            // 
+            label5.AutoSize = true;
+            label5.Location = new Point(143, 81);
+            label5.Name = "label5";
+            label5.Size = new Size(91, 20);
+            label5.TabIndex = 7;
+            label5.Text = "URL Scraper";
+            // 
+            // textBoxScraperCount
+            // 
+            textBoxScraperCount.Location = new Point(143, 104);
+            textBoxScraperCount.Name = "textBoxScraperCount";
+            textBoxScraperCount.Size = new Size(125, 27);
+            textBoxScraperCount.TabIndex = 8;
+            textBoxScraperCount.Text = "24";
+            // 
+            // tableLayoutPanel1
+            // 
+            tableLayoutPanel1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            tableLayoutPanel1.ColumnCount = 2;
+            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle());
+            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            tableLayoutPanel1.Controls.Add(textBoxSuccessURLs, 1, 0);
+            tableLayoutPanel1.Controls.Add(textBoxFailURLs, 1, 1);
+            tableLayoutPanel1.Controls.Add(label7, 0, 1);
+            tableLayoutPanel1.Controls.Add(label6, 0, 0);
+            tableLayoutPanel1.Location = new Point(12, 235);
+            tableLayoutPanel1.Name = "tableLayoutPanel1";
+            tableLayoutPanel1.RowCount = 2;
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+            tableLayoutPanel1.Size = new Size(471, 318);
+            tableLayoutPanel1.TabIndex = 10;
+            // 
+            // textBoxFailURLs
+            // 
+            textBoxFailURLs.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            textBoxFailURLs.Location = new Point(69, 162);
+            textBoxFailURLs.Multiline = true;
+            textBoxFailURLs.Name = "textBoxFailURLs";
+            textBoxFailURLs.ReadOnly = true;
+            textBoxFailURLs.ScrollBars = ScrollBars.Both;
+            textBoxFailURLs.Size = new Size(399, 153);
+            textBoxFailURLs.TabIndex = 3;
+            // 
+            // label7
+            // 
+            label7.AutoSize = true;
+            label7.Location = new Point(3, 159);
+            label7.Name = "label7";
+            label7.Size = new Size(32, 20);
+            label7.TabIndex = 5;
+            label7.Text = "Fail";
+            // 
+            // label6
+            // 
+            label6.AutoSize = true;
+            label6.Location = new Point(3, 0);
+            label6.Name = "label6";
+            label6.Size = new Size(60, 20);
+            label6.TabIndex = 4;
+            label6.Text = "Success";
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(9F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(495, 576);
+            Controls.Add(tableLayoutPanel1);
+            Controls.Add(checkBoxHeadless);
+            Controls.Add(textBoxScraperCount);
+            Controls.Add(label5);
+            Controls.Add(textBoxCounterCount);
+            Controls.Add(label4);
+            Controls.Add(labelResult);
             Controls.Add(label3);
             Controls.Add(progressBar1);
-            Controls.Add(textBoxURLs);
             Controls.Add(buttonDownload);
             Controls.Add(textBoxPageTo);
             Controls.Add(textBoxPageFrom);
@@ -132,8 +252,10 @@
             Controls.Add(label2);
             Controls.Add(label1);
             Name = "Form1";
-            Text = "Archibate_Scraper";
+            Text = "Archivebate_Scraper";
             FormClosing += Form1_FormClosing;
+            tableLayoutPanel1.ResumeLayout(false);
+            tableLayoutPanel1.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -146,8 +268,18 @@
         private TextBox textBoxPageFrom;
         private TextBox textBoxPageTo;
         private Button buttonDownload;
-        private TextBox textBoxURLs;
+        private TextBox textBoxSuccessURLs;
         private ProgressBar progressBar1;
         private Label label3;
+        private Label labelResult;
+        private Label label4;
+        private TextBox textBoxCounterCount;
+        private CheckBox checkBoxHeadless;
+        private Label label5;
+        private TextBox textBoxScraperCount;
+        private TableLayoutPanel tableLayoutPanel1;
+        private TextBox textBoxFailURLs;
+        private Label label7;
+        private Label label6;
     }
 }
