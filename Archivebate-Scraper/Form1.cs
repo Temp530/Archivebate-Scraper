@@ -2,6 +2,7 @@ using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
 using SeleniumExtras.WaitHelpers;
+using System.Media;
 
 namespace Archivebate_Scraper
 {
@@ -93,20 +94,21 @@ namespace Archivebate_Scraper
                 _options.AddArgument("--window-size=1280x720");
                 _options.AddArgument("--disable-infobars");
                 _options.AddArgument("--disable-extensions");
-                //_options.AddArgument("--blink-settings=imagesEnabled=false");
+                _options.AddArgument("--blink-settings=imagesEnabled=false");
 
                 //Ä³½Ì¿ë º¯¼ö
                 List<string> videoPageUrls = new List<string>();
                 List<string> videoFileUrls = new List<string>();
                 string baseUrl = "https://www.archivebate.com/profile/";
                 string pageOption = "?page=";
-                string nextLine = ",\n";
+                string nextLine = "\n";
                 By XPathVerify = By.XPath("//*[@id=\"verify\"]");
-                By XPathLastElement = By.XPath("//*[@id=\"app\"]/main/section/div/div/div/div/div[2]/div[4]");
-                By XPathVideo = By.ClassName("video_item");
+                By XPathLastElement = By.XPath("//*[@id=\"app\"]/main/section/div/div/div/div/div[2]/div[3]/section[20]");
+                By VideoElement = By.ClassName("video_item");
                 string href = "href";
 
-                int totalPageCount = int.Parse(textBoxPageTo.Text) - int.Parse(textBoxPageFrom.Text) + 1;
+                int destinationPage = int.Parse(textBoxPageTo.Text);
+                int totalPageCount = destinationPage - int.Parse(textBoxPageFrom.Text) + 1;
                 int CounterCount = int.Parse(textBoxCounterCount.Text);
                 int ScraperCount = int.Parse(textBoxScraperCount.Text);
 
@@ -125,7 +127,9 @@ namespace Archivebate_Scraper
                             _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(3);
 
                             int workersStartPage = tempIndex * quota + 1;
-                            int workersEndPage = workersStartPage + quota - 1;
+                            int workersEndPage = Math.Clamp(workersStartPage + quota - 1, workersStartPage, destinationPage);
+                            if (tempIndex.Equals(CounterCount - 1))
+                                workersEndPage = destinationPage;
                             for (int page = workersStartPage; page <= workersEndPage; page++)
                             {
                                 if (CTS.IsCancellationRequested)
@@ -133,25 +137,38 @@ namespace Archivebate_Scraper
                                 _driver.Navigate().GoToUrl(baseUrl + textBoxID.Text + pageOption + page);
                                 /*if (page == workersStartPage)
                                     _driver.FindElement(XPathVerify).Click();*/
-                                WebDriverWait wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(3));
-                                var last = wait.Until(c => c.FindElement(XPathLastElement));
-                                var elements = _driver.FindElements(XPathVideo);
+                                WebDriverWait wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(5));
+                                try
+                                {
+                                    wait.Until(ExpectedConditions.ElementIsVisible(XPathLastElement));
+                                }
+                                catch (WebDriverTimeoutException)
+                                {
+                                    //Last Page
+                                }
+
+                                var elements = _driver.FindElements(VideoElement);
                                 for (int i = 1; i <= elements.Count; i++)
                                 {
                                     if (CTS.IsCancellationRequested)
                                         return;
-                                    videoPageUrls.Add(_driver.FindElement(By.XPath($"//*[@id=\"app\"]/main/section/div/div/div/div/div[2]/div[3]/section[{i}]/div[2]/a")).GetAttribute(href));
+                                    lock (videoPageUrls)
+                                        videoPageUrls.Add(_driver.FindElement(By.XPath($"//*[@id=\"app\"]/main/section/div/div/div/div/div[2]/div[3]/section[{i}]/div[2]/a")).GetAttribute(href));
                                 }
-                                Task.Run(() => ((IProgress<int>)addProgress).Report((int)((float)page / workersEndPage * (50f / CounterCount))), CTS.Token);
+                                int tempPage = page;
+                                int tempworkersEndPage = workersEndPage;
+                                Task.Run(() => ((IProgress<int>)addProgress).Report((int)((float)tempPage / tempworkersEndPage * (50f / CounterCount))), CTS.Token);
                             }
                         }, CTS.Token));
                     }
-                    Task.WaitAll(workers.ToArray());
+                    var workerArray = workers.ToArray();
+                    Task.WaitAll(workerArray);
                 }
                 finally
                 {
                     workers.ForEach(worker => worker.Dispose());
                     workers.Clear();
+                    UpdateResultLabelSafe($"Success: {successCount} / Fail: {failCount} / Total: {videoPageUrls.Count}");
                 }
                 Task.Run(() => ((IProgress<int>)updateProgress).Report(50), CTS.Token);
 
@@ -174,6 +191,8 @@ namespace Archivebate_Scraper
 
                                 int workersStartIndex = tempIndex * quota;
                                 int workersEndIndex = Math.Clamp(workersStartIndex + quota, 0, videoPageUrls.Count);//-1
+                                if (tempIndex.Equals(ScraperCount - 1))
+                                    workersEndIndex = videoPageUrls.Count;
 
                                 for (int i = workersStartIndex; i < workersEndIndex; i++)
                                 {
@@ -186,74 +205,73 @@ namespace Archivebate_Scraper
                                         catch (WebDriverException e)
                                         {
                                             Console.WriteLine(e);
-                                            failCount++;
+                                            lock (this)
+                                                failCount++;
                                             AddFailTextBoxSafe(videoPageUrls[i] + nextLine);
                                         }
-                                        IWebDriver videoFrame = null;
-
-                                        try
-                                        {
-                                            videoFrame = iframeWait.Until(ExpectedConditions.FrameToBeAvailableAndSwitchToIt(By.TagName("IFRAME")));
-                                        }
-                                        catch (WebDriverTimeoutException)
-                                        {
-                                            failCount++;
-                                            AddFailTextBoxSafe(videoPageUrls[i] + nextLine);
-                                            continue;
-                                        }
-
                                         IWebElement button = null;
                                         try
                                         {
+                                            if (iframeWait.Until(ExpectedConditions.ElementIsVisible(By.TagName("IFRAME"))).GetAttribute("src").Contains("https://www.archivebate.com/embed"))
+                                            {
+                                                lock (this)
+                                                    successCount++;
+                                                AddSuccessTextBoxSafe(videoPageUrls[i] + nextLine);
+                                                continue;
+                                            }
+                                            iframeWait.Until(ExpectedConditions.FrameToBeAvailableAndSwitchToIt(By.TagName("IFRAME")));
                                             button = iframeWait.Until(ExpectedConditions.ElementToBeClickable(By.ClassName("vjs-big-play-button")));
+
                                         }
                                         catch (WebDriverTimeoutException)
                                         {
-                                            failCount++;
+                                            lock (this)
+                                                failCount++;
                                             AddFailTextBoxSafe(videoPageUrls[i] + nextLine);
-                                            //videoFileUrls.Add(videoPageUrls[i]);
                                             continue;
                                         }
-                                        successCount++;
                                         _drivers[tempIndex].ExecuteScript("arguments[0].click();", button);
 
                                         var waitForElement = iframeWait.Until(ExpectedConditions.ElementExists(By.ClassName("vjs-tech")));
 
+                                        lock (this)
+                                            successCount++;
                                         AddSuccessTextBoxSafe(iframeWait.Until<string>(c =>
                                         {
                                             string result = waitForElement.GetAttribute("src");
                                             if (result != null && !result.Equals(""))
                                             {
-                                                if (result.Contains("mxcontent") || result.Contains("xp-cdn.net") || result.Contains("video-delivery.net"))
-                                                    return result;
-                                                else
+                                                if (result.Contains("video-delivery.net"))
                                                     return videoPageUrls[i];
+                                                else
+                                                    return result;
                                             }
                                             else
                                                 return null;
                                         }) + nextLine);
-
-                                        Task.Run(() => ((IProgress<int>)addProgress).Report((int)((float)i / quota * (50f / ScraperCount))), CTS.Token);
                                     }
                                     finally
                                     {
-                                        UpdateResultLabelSafe($"Success: {successCount} / Fail: {failCount}");
+                                        Task.Run(() => ((IProgress<int>)updateProgress).Report(50 + (int)((float)(successCount + failCount) / videoPageUrls.Count * 50f)), CTS.Token);
+                                        UpdateResultLabelSafe($"Success: {successCount} / Fail: {failCount} / Total: {videoPageUrls.Count}");
                                     }
                                 }
                             }, CTS.Token);
                             _drivers[tempIndex]?.Close();
                         }, CTS.Token));
                     }
-                    Task.WaitAll(workers.ToArray());
+                    var workerArray = workers.ToArray();
+                    Task.WaitAll(workerArray);
                 }
                 finally
                 {
                     workers.ForEach(worker => worker.Dispose());
                     workers.Clear();
                 }
+                SystemSounds.Beep.Play();
                 MessageBox.Show("Done");
                 Task.Run(() => ((IProgress<int>)updateProgress).Report(100), CTS.Token);
-                UpdateResultLabelSafe($"Success: {successCount} / Fail: {failCount} / Total: {successCount + failCount}");
+                UpdateResultLabelSafe($"Success: {successCount} / Fail: {failCount} / Total: {videoPageUrls.Count}");
             }, CTS.Token);
         }
 

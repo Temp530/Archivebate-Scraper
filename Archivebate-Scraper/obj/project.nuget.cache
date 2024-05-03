@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "gYYpHhKcK0l3ZmlIxjn1FE7ia2ZoPxeMxMR93IfwVIv+fMIFbqkCZO674CrCILQFK4QVQslnS8sHnV5av+7FbQ==",
+  "dgSpecHash": "wjipiQv0IEKsqY+sT1uKLtaRLbyPh3uRNkkItskeFJdLNllsgkFCk31OGl47WIW1UT3OjMU3N5i/nIg+t88OBw==",
   "success": true,
-  "projectFilePath": "C:\\repos\\Archivebate-Scraper\\Archivebate-Scraper\\Archivebate-Scraper.csproj",
+  "projectFilePath": "C:\\GitHub\\Archivebate-Scraper\\Archivebate-Scraper\\Archivebate-Scraper.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\dhtpd\\.nuget\\packages\\dotnetseleniumextras.waithelpers\\3.11.0\\dotnetseleniumextras.waithelpers.3.11.0.nupkg.sha512",
     "C:\\Users\\dhtpd\\.nuget\\packages\\microsoft.netcore.platforms\\1.1.0\\microsoft.netcore.platforms.1.1.0.nupkg.sha512",

@@ -53,48 +53,52 @@
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(12, 15);
+            label1.Location = new Point(13, 19);
             label1.Name = "label1";
-            label1.Size = new Size(24, 20);
+            label1.Size = new Size(30, 25);
             label1.TabIndex = 0;
             label1.Text = "ID";
             // 
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(12, 48);
+            label2.Location = new Point(13, 60);
             label2.Name = "label2";
-            label2.Size = new Size(43, 20);
+            label2.Size = new Size(52, 25);
             label2.TabIndex = 0;
             label2.Text = "Page";
             // 
             // textBoxID
             // 
-            textBoxID.Location = new Point(72, 12);
+            textBoxID.Location = new Point(80, 15);
+            textBoxID.Margin = new Padding(3, 4, 3, 4);
             textBoxID.Name = "textBoxID";
-            textBoxID.Size = new Size(125, 27);
+            textBoxID.Size = new Size(138, 31);
             textBoxID.TabIndex = 1;
             // 
             // textBoxPageFrom
             // 
-            textBoxPageFrom.Location = new Point(72, 45);
+            textBoxPageFrom.Location = new Point(80, 56);
+            textBoxPageFrom.Margin = new Padding(3, 4, 3, 4);
             textBoxPageFrom.Name = "textBoxPageFrom";
-            textBoxPageFrom.Size = new Size(125, 27);
+            textBoxPageFrom.Size = new Size(138, 31);
             textBoxPageFrom.TabIndex = 1;
             textBoxPageFrom.Text = "1";
             // 
             // textBoxPageTo
             // 
-            textBoxPageTo.Location = new Point(229, 45);
+            textBoxPageTo.Location = new Point(254, 56);
+            textBoxPageTo.Margin = new Padding(3, 4, 3, 4);
             textBoxPageTo.Name = "textBoxPageTo";
-            textBoxPageTo.Size = new Size(125, 27);
+            textBoxPageTo.Size = new Size(138, 31);
             textBoxPageTo.TabIndex = 1;
             // 
             // buttonDownload
             // 
-            buttonDownload.Location = new Point(360, 45);
+            buttonDownload.Location = new Point(400, 56);
+            buttonDownload.Margin = new Padding(3, 4, 3, 4);
             buttonDownload.Name = "buttonDownload";
-            buttonDownload.Size = new Size(111, 29);
+            buttonDownload.Size = new Size(123, 36);
             buttonDownload.TabIndex = 2;
             buttonDownload.Text = "Start";
             buttonDownload.UseVisualStyleBackColor = true;
@@ -103,28 +107,30 @@
             // textBoxSuccessURLs
             // 
             textBoxSuccessURLs.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            textBoxSuccessURLs.Location = new Point(69, 3);
+            textBoxSuccessURLs.Location = new Point(85, 4);
+            textBoxSuccessURLs.Margin = new Padding(3, 4, 3, 4);
             textBoxSuccessURLs.Multiline = true;
             textBoxSuccessURLs.Name = "textBoxSuccessURLs";
             textBoxSuccessURLs.ReadOnly = true;
             textBoxSuccessURLs.ScrollBars = ScrollBars.Both;
-            textBoxSuccessURLs.Size = new Size(399, 153);
+            textBoxSuccessURLs.Size = new Size(435, 191);
             textBoxSuccessURLs.TabIndex = 3;
             // 
             // progressBar1
             // 
             progressBar1.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            progressBar1.Location = new Point(12, 200);
+            progressBar1.Location = new Point(13, 250);
+            progressBar1.Margin = new Padding(3, 4, 3, 4);
             progressBar1.Name = "progressBar1";
-            progressBar1.Size = new Size(471, 29);
+            progressBar1.Size = new Size(523, 36);
             progressBar1.TabIndex = 4;
             // 
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new Point(203, 48);
+            label3.Location = new Point(226, 60);
             label3.Name = "label3";
-            label3.Size = new Size(20, 20);
+            label3.Size = new Size(25, 25);
             label3.TabIndex = 5;
             label3.Text = "~";
             // 
@@ -132,26 +138,27 @@
             // 
             labelResult.AutoSize = true;
             labelResult.Dock = DockStyle.Bottom;
-            labelResult.Location = new Point(0, 556);
+            labelResult.Location = new Point(0, 695);
             labelResult.Name = "labelResult";
-            labelResult.Size = new Size(131, 20);
+            labelResult.Size = new Size(161, 25);
             labelResult.TabIndex = 6;
             labelResult.Text = "Success: 0 / Fail: 0";
             // 
             // label4
             // 
             label4.AutoSize = true;
-            label4.Location = new Point(12, 81);
+            label4.Location = new Point(13, 101);
             label4.Name = "label4";
-            label4.Size = new Size(103, 20);
+            label4.Size = new Size(122, 25);
             label4.TabIndex = 7;
             label4.Text = "Page Counter";
             // 
             // textBoxCounterCount
             // 
-            textBoxCounterCount.Location = new Point(12, 104);
+            textBoxCounterCount.Location = new Point(13, 130);
+            textBoxCounterCount.Margin = new Padding(3, 4, 3, 4);
             textBoxCounterCount.Name = "textBoxCounterCount";
-            textBoxCounterCount.Size = new Size(125, 27);
+            textBoxCounterCount.Size = new Size(138, 31);
             textBoxCounterCount.TabIndex = 8;
             textBoxCounterCount.Text = "2";
             // 
@@ -160,9 +167,10 @@
             checkBoxHeadless.AutoSize = true;
             checkBoxHeadless.Checked = true;
             checkBoxHeadless.CheckState = CheckState.Checked;
-            checkBoxHeadless.Location = new Point(12, 170);
+            checkBoxHeadless.Location = new Point(13, 212);
+            checkBoxHeadless.Margin = new Padding(3, 4, 3, 4);
             checkBoxHeadless.Name = "checkBoxHeadless";
-            checkBoxHeadless.Size = new Size(91, 24);
+            checkBoxHeadless.Size = new Size(111, 29);
             checkBoxHeadless.TabIndex = 9;
             checkBoxHeadless.Text = "Headless";
             checkBoxHeadless.UseVisualStyleBackColor = true;
@@ -170,17 +178,18 @@
             // label5
             // 
             label5.AutoSize = true;
-            label5.Location = new Point(143, 81);
+            label5.Location = new Point(159, 101);
             label5.Name = "label5";
-            label5.Size = new Size(91, 20);
+            label5.Size = new Size(112, 25);
             label5.TabIndex = 7;
             label5.Text = "URL Scraper";
             // 
             // textBoxScraperCount
             // 
-            textBoxScraperCount.Location = new Point(143, 104);
+            textBoxScraperCount.Location = new Point(159, 130);
+            textBoxScraperCount.Margin = new Padding(3, 4, 3, 4);
             textBoxScraperCount.Name = "textBoxScraperCount";
-            textBoxScraperCount.Size = new Size(125, 27);
+            textBoxScraperCount.Size = new Size(138, 31);
             textBoxScraperCount.TabIndex = 8;
             textBoxScraperCount.Text = "24";
             // 
@@ -194,31 +203,33 @@
             tableLayoutPanel1.Controls.Add(textBoxFailURLs, 1, 1);
             tableLayoutPanel1.Controls.Add(label7, 0, 1);
             tableLayoutPanel1.Controls.Add(label6, 0, 0);
-            tableLayoutPanel1.Location = new Point(12, 235);
+            tableLayoutPanel1.Location = new Point(13, 294);
+            tableLayoutPanel1.Margin = new Padding(3, 4, 3, 4);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
             tableLayoutPanel1.RowCount = 2;
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            tableLayoutPanel1.Size = new Size(471, 318);
+            tableLayoutPanel1.Size = new Size(523, 398);
             tableLayoutPanel1.TabIndex = 10;
             // 
             // textBoxFailURLs
             // 
             textBoxFailURLs.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            textBoxFailURLs.Location = new Point(69, 162);
+            textBoxFailURLs.Location = new Point(85, 203);
+            textBoxFailURLs.Margin = new Padding(3, 4, 3, 4);
             textBoxFailURLs.Multiline = true;
             textBoxFailURLs.Name = "textBoxFailURLs";
             textBoxFailURLs.ReadOnly = true;
             textBoxFailURLs.ScrollBars = ScrollBars.Both;
-            textBoxFailURLs.Size = new Size(399, 153);
+            textBoxFailURLs.Size = new Size(435, 191);
             textBoxFailURLs.TabIndex = 3;
             // 
             // label7
             // 
             label7.AutoSize = true;
-            label7.Location = new Point(3, 159);
+            label7.Location = new Point(3, 199);
             label7.Name = "label7";
-            label7.Size = new Size(32, 20);
+            label7.Size = new Size(38, 25);
             label7.TabIndex = 5;
             label7.Text = "Fail";
             // 
@@ -227,15 +238,15 @@
             label6.AutoSize = true;
             label6.Location = new Point(3, 0);
             label6.Name = "label6";
-            label6.Size = new Size(60, 20);
+            label6.Size = new Size(76, 25);
             label6.TabIndex = 4;
             label6.Text = "Success";
             // 
             // Form1
             // 
-            AutoScaleDimensions = new SizeF(9F, 20F);
+            AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(495, 576);
+            ClientSize = new Size(550, 720);
             Controls.Add(tableLayoutPanel1);
             Controls.Add(checkBoxHeadless);
             Controls.Add(textBoxScraperCount);
@@ -251,6 +262,7 @@
             Controls.Add(textBoxID);
             Controls.Add(label2);
             Controls.Add(label1);
+            Margin = new Padding(3, 4, 3, 4);
             Name = "Form1";
             Text = "Archivebate_Scraper";
             FormClosing += Form1_FormClosing;
