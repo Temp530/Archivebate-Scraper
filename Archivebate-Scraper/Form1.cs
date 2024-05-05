@@ -172,14 +172,26 @@ namespace Archivebate_Scraper
                 }
                 Task.Run(() => ((IProgress<int>)updateProgress).Report(50), CTS.Token);
 
-                quota = videoPageUrls.Count / ScraperCount;
-                while (_drivers.Count < ScraperCount)
-                {
-                    ChromeDriver _driver = new ChromeDriver(_driverService, _options);
-                    _drivers.Add(_driver);
-                }
                 try
                 {
+                    if (checkBoxOnlyPageURL.Checked)
+                    {
+                        for (int i = 0; i < videoPageUrls.Count; i++)
+                        {
+                            AddSuccessTextBoxSafe(videoPageUrls[i] + nextLine);
+
+                            Task.Run(() => ((IProgress<int>)updateProgress).Report(50 + (i / videoPageUrls.Count * 50)), CTS.Token);
+                        }
+                        Task.Run(() => ((IProgress<int>)updateProgress).Report(100), CTS.Token);
+                        return;
+                    }
+
+                    quota = videoPageUrls.Count / ScraperCount;
+                    while (_drivers.Count < ScraperCount)
+                    {
+                        ChromeDriver _driver = new ChromeDriver(_driverService, _options);
+                        _drivers.Add(_driver);
+                    }
                     for (int workerIndex = 0; workerIndex < ScraperCount; workerIndex++)
                     {
                         int tempIndex = workerIndex;
@@ -187,8 +199,6 @@ namespace Archivebate_Scraper
                         {
                             await Task.Run(() =>
                             {
-                                WebDriverWait iframeWait = new WebDriverWait(_drivers[tempIndex], TimeSpan.FromSeconds(10));
-
                                 int workersStartIndex = tempIndex * quota;
                                 int workersEndIndex = Math.Clamp(workersStartIndex + quota, 0, videoPageUrls.Count);//-1
                                 if (tempIndex.Equals(ScraperCount - 1))
@@ -196,6 +206,7 @@ namespace Archivebate_Scraper
 
                                 for (int i = workersStartIndex; i < workersEndIndex; i++)
                                 {
+                                    WebDriverWait iframeWait = new WebDriverWait(_drivers[tempIndex], TimeSpan.FromSeconds(10));
                                     try
                                     {
                                         try
@@ -212,16 +223,19 @@ namespace Archivebate_Scraper
                                         IWebElement button = null;
                                         try
                                         {
-                                            if (iframeWait.Until(ExpectedConditions.ElementIsVisible(By.TagName("IFRAME"))).GetAttribute("src").Contains("https://www.archivebate.com/embed"))
+                                            string src = (string)_drivers[tempIndex].ExecuteScript("return arguments[0].getAttribute('src');", iframeWait.Until(ExpectedConditions.ElementIsVisible(By.TagName("IFRAME"))));
+                                            string resultTemp = null;
+                                            if (src.Contains("https://www.archivebate.com/embed") || (src.Contains("mixdrop.ag") && src.Contains("https://")))
+                                                resultTemp = videoPageUrls[i] + nextLine;
+                                            iframeWait.Until(ExpectedConditions.FrameToBeAvailableAndSwitchToIt(By.TagName("IFRAME")));
+                                            button = iframeWait.Until(ExpectedConditions.ElementToBeClickable(By.ClassName("vjs-big-play-button")));
+                                            if (resultTemp != null && !resultTemp.Equals(""))
                                             {
                                                 lock (this)
                                                     successCount++;
-                                                AddSuccessTextBoxSafe(videoPageUrls[i] + nextLine);
+                                                AddSuccessTextBoxSafe(resultTemp);
                                                 continue;
                                             }
-                                            iframeWait.Until(ExpectedConditions.FrameToBeAvailableAndSwitchToIt(By.TagName("IFRAME")));
-                                            button = iframeWait.Until(ExpectedConditions.ElementToBeClickable(By.ClassName("vjs-big-play-button")));
-
                                         }
                                         catch (WebDriverTimeoutException)
                                         {
@@ -267,11 +281,11 @@ namespace Archivebate_Scraper
                 {
                     workers.ForEach(worker => worker.Dispose());
                     workers.Clear();
+                    SystemSounds.Beep.Play();
+                    MessageBox.Show("Done");
+                    Task.Run(() => ((IProgress<int>)updateProgress).Report(100), CTS.Token);
+                    UpdateResultLabelSafe($"Success: {successCount} / Fail: {failCount} / Total: {videoPageUrls.Count}");
                 }
-                SystemSounds.Beep.Play();
-                MessageBox.Show("Done");
-                Task.Run(() => ((IProgress<int>)updateProgress).Report(100), CTS.Token);
-                UpdateResultLabelSafe($"Success: {successCount} / Fail: {failCount} / Total: {videoPageUrls.Count}");
             }, CTS.Token);
         }
 
@@ -286,6 +300,11 @@ namespace Archivebate_Scraper
                 });
             });
 
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            label5.Visible = textBoxScraperCount.Visible = !checkBoxOnlyPageURL.Checked;
         }
     }
 }

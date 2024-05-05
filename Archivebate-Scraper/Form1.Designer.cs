@@ -47,6 +47,7 @@
             textBoxFailURLs = new TextBox();
             label7 = new Label();
             label6 = new Label();
+            checkBoxOnlyPageURL = new CheckBox();
             tableLayoutPanel1.SuspendLayout();
             SuspendLayout();
             // 
@@ -113,13 +114,13 @@
             textBoxSuccessURLs.Name = "textBoxSuccessURLs";
             textBoxSuccessURLs.ReadOnly = true;
             textBoxSuccessURLs.ScrollBars = ScrollBars.Both;
-            textBoxSuccessURLs.Size = new Size(435, 191);
+            textBoxSuccessURLs.Size = new Size(435, 240);
             textBoxSuccessURLs.TabIndex = 3;
             // 
             // progressBar1
             // 
             progressBar1.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            progressBar1.Location = new Point(13, 250);
+            progressBar1.Location = new Point(12, 261);
             progressBar1.Margin = new Padding(3, 4, 3, 4);
             progressBar1.Name = "progressBar1";
             progressBar1.Size = new Size(523, 36);
@@ -138,7 +139,7 @@
             // 
             labelResult.AutoSize = true;
             labelResult.Dock = DockStyle.Bottom;
-            labelResult.Location = new Point(0, 695);
+            labelResult.Location = new Point(0, 805);
             labelResult.Name = "labelResult";
             labelResult.Size = new Size(161, 25);
             labelResult.TabIndex = 6;
@@ -147,7 +148,7 @@
             // label4
             // 
             label4.AutoSize = true;
-            label4.Location = new Point(13, 101);
+            label4.Location = new Point(16, 129);
             label4.Name = "label4";
             label4.Size = new Size(122, 25);
             label4.TabIndex = 7;
@@ -155,7 +156,7 @@
             // 
             // textBoxCounterCount
             // 
-            textBoxCounterCount.Location = new Point(13, 130);
+            textBoxCounterCount.Location = new Point(16, 158);
             textBoxCounterCount.Margin = new Padding(3, 4, 3, 4);
             textBoxCounterCount.Name = "textBoxCounterCount";
             textBoxCounterCount.Size = new Size(138, 31);
@@ -167,7 +168,7 @@
             checkBoxHeadless.AutoSize = true;
             checkBoxHeadless.Checked = true;
             checkBoxHeadless.CheckState = CheckState.Checked;
-            checkBoxHeadless.Location = new Point(13, 212);
+            checkBoxHeadless.Location = new Point(13, 96);
             checkBoxHeadless.Margin = new Padding(3, 4, 3, 4);
             checkBoxHeadless.Name = "checkBoxHeadless";
             checkBoxHeadless.Size = new Size(111, 29);
@@ -178,7 +179,7 @@
             // label5
             // 
             label5.AutoSize = true;
-            label5.Location = new Point(159, 101);
+            label5.Location = new Point(15, 193);
             label5.Name = "label5";
             label5.Size = new Size(112, 25);
             label5.TabIndex = 7;
@@ -186,7 +187,7 @@
             // 
             // textBoxScraperCount
             // 
-            textBoxScraperCount.Location = new Point(159, 130);
+            textBoxScraperCount.Location = new Point(15, 222);
             textBoxScraperCount.Margin = new Padding(3, 4, 3, 4);
             textBoxScraperCount.Name = "textBoxScraperCount";
             textBoxScraperCount.Size = new Size(138, 31);
@@ -203,31 +204,31 @@
             tableLayoutPanel1.Controls.Add(textBoxFailURLs, 1, 1);
             tableLayoutPanel1.Controls.Add(label7, 0, 1);
             tableLayoutPanel1.Controls.Add(label6, 0, 0);
-            tableLayoutPanel1.Location = new Point(13, 294);
+            tableLayoutPanel1.Location = new Point(13, 305);
             tableLayoutPanel1.Margin = new Padding(3, 4, 3, 4);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
             tableLayoutPanel1.RowCount = 2;
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            tableLayoutPanel1.Size = new Size(523, 398);
+            tableLayoutPanel1.Size = new Size(523, 497);
             tableLayoutPanel1.TabIndex = 10;
             // 
             // textBoxFailURLs
             // 
             textBoxFailURLs.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            textBoxFailURLs.Location = new Point(85, 203);
+            textBoxFailURLs.Location = new Point(85, 252);
             textBoxFailURLs.Margin = new Padding(3, 4, 3, 4);
             textBoxFailURLs.Multiline = true;
             textBoxFailURLs.Name = "textBoxFailURLs";
             textBoxFailURLs.ReadOnly = true;
             textBoxFailURLs.ScrollBars = ScrollBars.Both;
-            textBoxFailURLs.Size = new Size(435, 191);
+            textBoxFailURLs.Size = new Size(435, 241);
             textBoxFailURLs.TabIndex = 3;
             // 
             // label7
             // 
             label7.AutoSize = true;
-            label7.Location = new Point(3, 199);
+            label7.Location = new Point(3, 248);
             label7.Name = "label7";
             label7.Size = new Size(38, 25);
             label7.TabIndex = 5;
@@ -242,11 +243,23 @@
             label6.TabIndex = 4;
             label6.Text = "Success";
             // 
+            // checkBoxOnlyPageURL
+            // 
+            checkBoxOnlyPageURL.AutoSize = true;
+            checkBoxOnlyPageURL.Location = new Point(130, 97);
+            checkBoxOnlyPageURL.Name = "checkBoxOnlyPageURL";
+            checkBoxOnlyPageURL.Size = new Size(157, 29);
+            checkBoxOnlyPageURL.TabIndex = 11;
+            checkBoxOnlyPageURL.Text = "Page URL only";
+            checkBoxOnlyPageURL.UseVisualStyleBackColor = true;
+            checkBoxOnlyPageURL.CheckedChanged += checkBox1_CheckedChanged;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(550, 720);
+            ClientSize = new Size(550, 830);
+            Controls.Add(checkBoxOnlyPageURL);
             Controls.Add(tableLayoutPanel1);
             Controls.Add(checkBoxHeadless);
             Controls.Add(textBoxScraperCount);
@@ -293,5 +306,6 @@
         private TextBox textBoxFailURLs;
         private Label label7;
         private Label label6;
+        private CheckBox checkBoxOnlyPageURL;
     }
 }
