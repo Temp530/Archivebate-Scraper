@@ -1,20 +1,24 @@
 {
   "format": 1,
   "restore": {
-    "C:\\GitHub\\Archivebate-Scraper\\Archivebate-Scraper\\Archivebate-Scraper.csproj": {}
+    "C:\\repos\\Archivebate-Scraper\\Archivebate-Scraper\\Archivebate-Scraper.csproj": {}
   },
   "projects": {
-    "C:\\GitHub\\Archivebate-Scraper\\Archivebate-Scraper\\Archivebate-Scraper.csproj": {
+    "C:\\repos\\Archivebate-Scraper\\Archivebate-Scraper\\Archivebate-Scraper.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\GitHub\\Archivebate-Scraper\\Archivebate-Scraper\\Archivebate-Scraper.csproj",
+        "projectUniqueName": "C:\\repos\\Archivebate-Scraper\\Archivebate-Scraper\\Archivebate-Scraper.csproj",
         "projectName": "Archivebate-Scraper",
-        "projectPath": "C:\\GitHub\\Archivebate-Scraper\\Archivebate-Scraper\\Archivebate-Scraper.csproj",
+        "projectPath": "C:\\repos\\Archivebate-Scraper\\Archivebate-Scraper\\Archivebate-Scraper.csproj",
         "packagesPath": "C:\\Users\\dhtpd\\.nuget\\packages\\",
-        "outputPath": "C:\\GitHub\\Archivebate-Scraper\\Archivebate-Scraper\\obj\\",
+        "outputPath": "C:\\repos\\Archivebate-Scraper\\Archivebate-Scraper\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
           "C:\\Users\\dhtpd\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
