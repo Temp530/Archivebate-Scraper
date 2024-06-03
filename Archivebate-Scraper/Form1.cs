@@ -153,7 +153,7 @@ namespace Archivebate_Scraper
                                     if (CTS.IsCancellationRequested)
                                         return;
                                     lock (videoPageUrls)
-                                        videoPageUrls.Add(_driver.FindElement(By.XPath($"//*[@id=\"app\"]/main/section/div/div/div/div/div[2]/div[3]/section[{i}]/div[2]/a")).GetAttribute(href));
+                                        videoPageUrls.Add(_driver.FindElement(By.XPath($"//*[@id=\"app\"]/main/section/div/div/div/div[2]/div[3]/section[{i}]/div[2]/a")).GetAttribute(href));
                                 }
                                 int tempPage = page;
                                 int tempworkersEndPage = workersEndPage;
@@ -215,7 +215,7 @@ namespace Archivebate_Scraper
                                         }
                                         catch (WebDriverException e)
                                         {
-                                            Console.WriteLine(e);
+                                            System.Diagnostics.Debug.WriteLine(e);
                                             lock (this)
                                                 failCount++;
                                             AddFailTextBoxSafe(videoPageUrls[i] + nextLine);
@@ -223,7 +223,7 @@ namespace Archivebate_Scraper
                                         IWebElement button = null;
                                         try
                                         {
-                                            string src = (string)_drivers[tempIndex].ExecuteScript("return arguments[0].getAttribute('src');", iframeWait.Until(ExpectedConditions.ElementIsVisible(By.TagName("IFRAME"))));
+                                            string src = iframeWait.Until(ExpectedConditions.ElementExists(By.TagName("IFRAME"))).GetAttribute("src");
                                             string resultTemp = null;
                                             if (src.Contains("https://www.archivebate.com/embed") || (src.Contains("mixdrop.ag") && src.Contains("https://")))
                                                 resultTemp = videoPageUrls[i] + nextLine;
