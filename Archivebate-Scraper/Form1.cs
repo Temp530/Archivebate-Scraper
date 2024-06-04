@@ -2,7 +2,9 @@ using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
 using SeleniumExtras.WaitHelpers;
+using System.Diagnostics;
 using System.Media;
+using Keys = System.Windows.Forms.Keys;
 
 namespace Archivebate_Scraper
 {
@@ -10,7 +12,14 @@ namespace Archivebate_Scraper
     {
         protected ChromeOptions _options = null;
         protected List<ChromeDriver> _drivers = new List<ChromeDriver>();
+        ChromeDriverService _driverService = ChromeDriverService.CreateDefaultService();
         CancellationTokenSource CTS;
+
+        string baseUrl = "https://www.archivebate.com/profile/";
+        string href = "href";
+        string pageOption = "?page=";
+        string nextLine = "\n";
+        string emptyString = "";
 
         private delegate void TextSafeDelegate(string text);
         private void AddSuccessTextBoxSafe(string text)
@@ -85,12 +94,13 @@ namespace Archivebate_Scraper
                 });
 
                 //드라이버 초기화
-                ChromeDriverService _driverService = ChromeDriverService.CreateDefaultService();
                 _driverService.HideCommandPromptWindow = true;
                 _options = new ChromeOptions();
-                _options.AddArgument("--disable-gpu");
                 if (checkBoxHeadless.Checked)
+                {
+                    _options.AddArgument("--disable-gpu");
                     _options.AddArgument("--headless");
+                }
                 _options.AddArgument("--window-size=1280x720");
                 _options.AddArgument("--disable-infobars");
                 _options.AddArgument("--disable-extensions");
@@ -99,13 +109,9 @@ namespace Archivebate_Scraper
                 //캐싱용 변수
                 List<string> videoPageUrls = new List<string>();
                 List<string> videoFileUrls = new List<string>();
-                string baseUrl = "https://www.archivebate.com/profile/";
-                string pageOption = "?page=";
-                string nextLine = "\n";
                 By XPathVerify = By.XPath("//*[@id=\"verify\"]");
-                By XPathLastElement = By.XPath("//*[@id=\"app\"]/main/section/div/div/div/div/div[2]/div[3]/section[20]");
+                By XPathLastElement = By.XPath("//*[@id=\"app\"]/main/section/div/div/div/div[2]/div[3]/section[20]");
                 By VideoElement = By.ClassName("video_item");
-                string href = "href";
 
                 int destinationPage = int.Parse(textBoxPageTo.Text);
                 int totalPageCount = destinationPage - int.Parse(textBoxPageFrom.Text) + 1;
@@ -187,92 +193,101 @@ namespace Archivebate_Scraper
                     }
 
                     quota = videoPageUrls.Count / ScraperCount;
+                    if (quota < 1)
+                    {
+                        quota = 1;
+                        ScraperCount = videoPageUrls.Count;
+                    }
+
                     while (_drivers.Count < ScraperCount)
                     {
                         ChromeDriver _driver = new ChromeDriver(_driverService, _options);
                         _drivers.Add(_driver);
                     }
+
                     for (int workerIndex = 0; workerIndex < ScraperCount; workerIndex++)
                     {
                         int tempIndex = workerIndex;
-                        workers.Add(Task.Run(async () =>
-                        {
-                            await Task.Run(() =>
+                        workers.Add(
+                            Task.Run(async () =>
                             {
-                                int workersStartIndex = tempIndex * quota;
-                                int workersEndIndex = Math.Clamp(workersStartIndex + quota, 0, videoPageUrls.Count);//-1
-                                if (tempIndex.Equals(ScraperCount - 1))
-                                    workersEndIndex = videoPageUrls.Count;
-
-                                for (int i = workersStartIndex; i < workersEndIndex; i++)
+                                await Task.Run(async () =>
                                 {
-                                    WebDriverWait iframeWait = new WebDriverWait(_drivers[tempIndex], TimeSpan.FromSeconds(10));
-                                    try
+                                    int workersStartIndex = tempIndex * quota;
+                                    int workersEndIndex = Math.Clamp(workersStartIndex + quota, 0, videoPageUrls.Count);//-1
+                                    if (tempIndex.Equals(ScraperCount - 1))
+                                        workersEndIndex = videoPageUrls.Count;
+
+                                    for (int i = workersStartIndex; i < workersEndIndex; i++)
                                     {
+                                        WebDriverWait iframeWait = new WebDriverWait(_drivers[tempIndex], TimeSpan.FromSeconds(50));
                                         try
                                         {
-                                            _drivers[tempIndex].Navigate().GoToUrl(videoPageUrls[i]);
-                                        }
-                                        catch (WebDriverException e)
-                                        {
-                                            System.Diagnostics.Debug.WriteLine(e);
-                                            lock (this)
-                                                failCount++;
-                                            AddFailTextBoxSafe(videoPageUrls[i] + nextLine);
-                                        }
-                                        IWebElement button = null;
-                                        try
-                                        {
-                                            string src = iframeWait.Until(ExpectedConditions.ElementExists(By.TagName("IFRAME"))).GetAttribute("src");
-                                            string resultTemp = null;
-                                            if (src.Contains("https://www.archivebate.com/embed") || (src.Contains("mixdrop.ag") && src.Contains("https://")))
-                                                resultTemp = videoPageUrls[i] + nextLine;
-                                            iframeWait.Until(ExpectedConditions.FrameToBeAvailableAndSwitchToIt(By.TagName("IFRAME")));
-                                            button = iframeWait.Until(ExpectedConditions.ElementToBeClickable(By.ClassName("vjs-big-play-button")));
-                                            if (resultTemp != null && !resultTemp.Equals(""))
+                                            try
+                                            {
+                                                _drivers[tempIndex].Navigate().GoToUrl(videoPageUrls[i]);
+                                            }
+                                            catch (WebDriverException e)
+                                            {
+                                                Debug.WriteLine(e);
+                                                lock (this)
+                                                    failCount++;
+                                                AddFailTextBoxSafe(videoPageUrls[i] + nextLine);
+                                            }
+                                            IWebElement button = null;
+                                            try
+                                            {
+                                                string src = iframeWait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//*[@id=\"app\"]/main/section/div/div/div[2]/div/div[1]/div[1]/iframe"))).GetAttribute("src");
+                                                string resultTemp = null;
+                                                if (src.Contains("https://www.archivebate.com/embed"))
+                                                    resultTemp = videoPageUrls[i] + nextLine;
+                                                if (resultTemp != null && !resultTemp.Equals(emptyString))
+                                                {
+                                                    lock (this)
+                                                        successCount++;
+                                                    AddSuccessTextBoxSafe(resultTemp);
+                                                    continue;
+                                                }
+                                                iframeWait.Until(ExpectedConditions.FrameToBeAvailableAndSwitchToIt(By.XPath("//*[@id=\"app\"]/main/section/div/div/div[2]/div/div[1]/div[1]/iframe")));
+                                                button = iframeWait.Until(ExpectedConditions.ElementToBeClickable(By.ClassName("vjs-big-play-button")));
+                                            }
+                                            catch (WebDriverTimeoutException)
                                             {
                                                 lock (this)
-                                                    successCount++;
-                                                AddSuccessTextBoxSafe(resultTemp);
+                                                    failCount++;
+                                                AddFailTextBoxSafe(videoPageUrls[i] + nextLine);
                                                 continue;
                                             }
-                                        }
-                                        catch (WebDriverTimeoutException)
-                                        {
+                                            _drivers[tempIndex].ExecuteScript("arguments[0].click();", button);
+
+                                            var waitForElement = iframeWait.Until(ExpectedConditions.ElementExists(By.ClassName("vjs-tech")));
+
                                             lock (this)
-                                                failCount++;
-                                            AddFailTextBoxSafe(videoPageUrls[i] + nextLine);
-                                            continue;
-                                        }
-                                        _drivers[tempIndex].ExecuteScript("arguments[0].click();", button);
-
-                                        var waitForElement = iframeWait.Until(ExpectedConditions.ElementExists(By.ClassName("vjs-tech")));
-
-                                        lock (this)
-                                            successCount++;
-                                        AddSuccessTextBoxSafe(iframeWait.Until<string>(c =>
-                                        {
-                                            string result = waitForElement.GetAttribute("src");
-                                            if (result != null && !result.Equals(""))
+                                                successCount++;
+                                            AddSuccessTextBoxSafe(iframeWait.Until<string>(c =>
                                             {
-                                                if (result.Contains("video-delivery.net"))
-                                                    return videoPageUrls[i];
+                                                string result = waitForElement.GetAttribute("src");
+                                                if (result != null && !result.Equals(emptyString))
+                                                {
+                                                    if (result.Contains("video-delivery.net"))
+                                                        return videoPageUrls[i];
+                                                    else
+                                                        return result;
+                                                }
                                                 else
-                                                    return result;
-                                            }
-                                            else
-                                                return null;
-                                        }) + nextLine);
+                                                    return null;
+                                            }) + nextLine);
+                                        }
+                                        finally
+                                        {
+                                            Task.Run(() => ((IProgress<int>)updateProgress).Report(50 + (int)((float)(successCount + failCount) / videoPageUrls.Count * 50f)), CTS.Token);
+                                            UpdateResultLabelSafe($"Success: {successCount} / Fail: {failCount} / Total: {videoPageUrls.Count}");
+                                        }
                                     }
-                                    finally
-                                    {
-                                        Task.Run(() => ((IProgress<int>)updateProgress).Report(50 + (int)((float)(successCount + failCount) / videoPageUrls.Count * 50f)), CTS.Token);
-                                        UpdateResultLabelSafe($"Success: {successCount} / Fail: {failCount} / Total: {videoPageUrls.Count}");
-                                    }
-                                }
-                            }, CTS.Token);
-                            _drivers[tempIndex]?.Close();
-                        }, CTS.Token));
+                                }, CTS.Token);
+                                _drivers[tempIndex]?.Close();
+                            }, CTS.Token)
+                        );
                     }
                     var workerArray = workers.ToArray();
                     Task.WaitAll(workerArray);
@@ -296,8 +311,12 @@ namespace Archivebate_Scraper
             {
                 _drivers.ForEach(driver =>
                 {
+                    driver?.Close();
                     driver?.Quit();
+                    foreach (Process P in Process.GetProcessesByName("chromedriver"))
+                        P.Kill();
                 });
+                _driverService?.Dispose();
             });
 
         }
@@ -305,6 +324,54 @@ namespace Archivebate_Scraper
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
             label5.Visible = textBoxScraperCount.Visible = !checkBoxOnlyPageURL.Checked;
+        }
+
+        private void textBoxCounterCount_TextChanged(object sender, EventArgs e)
+        {
+            int pageCounterCount = int.Parse(textBoxCounterCount.Text);
+            int lastPage = int.Parse(textBoxPageTo.Text);
+            if (pageCounterCount > lastPage)
+                textBoxCounterCount.Text = textBoxPageTo.Text;
+        }
+        // Boolean flag used to determine when a character other than a number is entered.
+        private bool nonNumberEntered = false;
+
+        // Handle the KeyDown event to determine the type of character entered into the control.
+        private void textBoxOnlyNum_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
+        {
+            // Initialize the flag to false.
+            nonNumberEntered = false;
+
+            // Determine whether the keystroke is a number from the top of the keyboard.
+            if (e.KeyCode < Keys.D0 || e.KeyCode > Keys.D9)
+            {
+                // Determine whether the keystroke is a number from the keypad.
+                if (e.KeyCode < Keys.NumPad0 || e.KeyCode > Keys.NumPad9)
+                {
+                    // Determine whether the keystroke is a backspace.
+                    if (e.KeyCode != Keys.Back)
+                    {
+                        // A non-numerical keystroke was pressed.
+                        // Set the flag to true and evaluate in KeyPress event.
+                        nonNumberEntered = true;
+                    }
+                }
+            }
+            //If shift key was pressed, it's not a number.
+            if (Control.ModifierKeys == Keys.Shift)
+            {
+                nonNumberEntered = true;
+            }
+        }
+        private void textBoxOnlyNum_KeyPress(object sender, System.Windows.Forms.KeyPressEventArgs e)
+        {
+            // Check for the flag being set in the KeyDown event.
+            if (nonNumberEntered == true)
+            {
+                // Stop the character from being entered into the control since it is non-numerical.
+                e.Handled = true;
+                MessageBox.Show("Only numeric input is accepted");
+            }
         }
     }
 }

@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Archivebate-Scraper")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f6be50e3f6530b4adfa0d076e490299d92b5fcd8")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c8b7234e91432d3f4874cbd2b7bdbae9c9fa8cac")]
 [assembly: System.Reflection.AssemblyProductAttribute("Archivebate-Scraper")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Archivebate-Scraper")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

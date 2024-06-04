@@ -74,15 +74,17 @@
             textBoxID.Location = new Point(72, 12);
             textBoxID.Name = "textBoxID";
             textBoxID.Size = new Size(125, 27);
-            textBoxID.TabIndex = 1;
+            textBoxID.TabIndex = 0;
             // 
             // textBoxPageFrom
             // 
             textBoxPageFrom.Location = new Point(72, 45);
             textBoxPageFrom.Name = "textBoxPageFrom";
             textBoxPageFrom.Size = new Size(125, 27);
-            textBoxPageFrom.TabIndex = 1;
+            textBoxPageFrom.TabIndex = 5;
             textBoxPageFrom.Text = "1";
+            textBoxPageFrom.KeyDown += textBoxOnlyNum_KeyDown;
+            textBoxPageFrom.KeyPress += textBoxOnlyNum_KeyPress;
             // 
             // textBoxPageTo
             // 
@@ -90,13 +92,15 @@
             textBoxPageTo.Name = "textBoxPageTo";
             textBoxPageTo.Size = new Size(125, 27);
             textBoxPageTo.TabIndex = 1;
+            textBoxPageTo.KeyDown += textBoxOnlyNum_KeyDown;
+            textBoxPageTo.KeyPress += textBoxOnlyNum_KeyPress;
             // 
             // buttonDownload
             // 
             buttonDownload.Location = new Point(360, 45);
             buttonDownload.Name = "buttonDownload";
             buttonDownload.Size = new Size(111, 29);
-            buttonDownload.TabIndex = 2;
+            buttonDownload.TabIndex = 4;
             buttonDownload.Text = "Start";
             buttonDownload.UseVisualStyleBackColor = true;
             buttonDownload.Click += buttonDownload_Click;
@@ -110,7 +114,7 @@
             textBoxSuccessURLs.ReadOnly = true;
             textBoxSuccessURLs.ScrollBars = ScrollBars.Both;
             textBoxSuccessURLs.Size = new Size(399, 193);
-            textBoxSuccessURLs.TabIndex = 3;
+            textBoxSuccessURLs.TabIndex = 8;
             // 
             // progressBar1
             // 
@@ -153,8 +157,11 @@
             textBoxCounterCount.Location = new Point(14, 126);
             textBoxCounterCount.Name = "textBoxCounterCount";
             textBoxCounterCount.Size = new Size(125, 27);
-            textBoxCounterCount.TabIndex = 8;
+            textBoxCounterCount.TabIndex = 2;
             textBoxCounterCount.Text = "2";
+            textBoxCounterCount.TextChanged += textBoxCounterCount_TextChanged;
+            textBoxCounterCount.KeyDown += textBoxOnlyNum_KeyDown;
+            textBoxCounterCount.KeyPress += textBoxOnlyNum_KeyPress;
             // 
             // checkBoxHeadless
             // 
@@ -164,7 +171,7 @@
             checkBoxHeadless.Location = new Point(12, 77);
             checkBoxHeadless.Name = "checkBoxHeadless";
             checkBoxHeadless.Size = new Size(91, 24);
-            checkBoxHeadless.TabIndex = 9;
+            checkBoxHeadless.TabIndex = 6;
             checkBoxHeadless.Text = "Headless";
             checkBoxHeadless.UseVisualStyleBackColor = true;
             // 
@@ -182,8 +189,10 @@
             textBoxScraperCount.Location = new Point(14, 178);
             textBoxScraperCount.Name = "textBoxScraperCount";
             textBoxScraperCount.Size = new Size(125, 27);
-            textBoxScraperCount.TabIndex = 8;
+            textBoxScraperCount.TabIndex = 3;
             textBoxScraperCount.Text = "24";
+            textBoxScraperCount.KeyDown += textBoxOnlyNum_KeyDown;
+            textBoxScraperCount.KeyPress += textBoxOnlyNum_KeyPress;
             // 
             // tableLayoutPanel1
             // 
@@ -212,7 +221,7 @@
             textBoxFailURLs.ReadOnly = true;
             textBoxFailURLs.ScrollBars = ScrollBars.Both;
             textBoxFailURLs.Size = new Size(399, 193);
-            textBoxFailURLs.TabIndex = 3;
+            textBoxFailURLs.TabIndex = 9;
             // 
             // label7
             // 
@@ -239,7 +248,7 @@
             checkBoxOnlyPageURL.Margin = new Padding(3, 2, 3, 2);
             checkBoxOnlyPageURL.Name = "checkBoxOnlyPageURL";
             checkBoxOnlyPageURL.Size = new Size(131, 24);
-            checkBoxOnlyPageURL.TabIndex = 11;
+            checkBoxOnlyPageURL.TabIndex = 7;
             checkBoxOnlyPageURL.Text = "Page URL only";
             checkBoxOnlyPageURL.UseVisualStyleBackColor = true;
             checkBoxOnlyPageURL.CheckedChanged += checkBox1_CheckedChanged;
