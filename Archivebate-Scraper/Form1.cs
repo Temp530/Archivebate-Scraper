@@ -159,7 +159,7 @@ namespace Archivebate_Scraper
                                     if (CTS.IsCancellationRequested)
                                         return;
                                     lock (videoPageUrls)
-                                        videoPageUrls.Add(_driver.FindElement(By.XPath($"//*[@id=\"app\"]/main/section/div/div/div/div[2]/div[3]/section[{i}]/div[2]/a")).GetAttribute(href));
+                                        videoPageUrls.Add(_driver.FindElement(By.XPath($"//*[@id=\"app\"]/main/section/div/div/div/div[2]/section/div[3]/section[{i}]/div[2]/a")).GetAttribute(href));
                                 }
                                 int tempPage = page;
                                 int tempworkersEndPage = workersEndPage;
@@ -239,7 +239,7 @@ namespace Archivebate_Scraper
                                             {
                                                 string src = iframeWait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//*[@id=\"app\"]/main/section/div/div/div[2]/div/div[1]/div[1]/iframe"))).GetAttribute("src");
                                                 string resultTemp = null;
-                                                if (src.Contains("https://www.archivebate.com/embed"))
+                                                if (src.Contains("https://www.archivebate.com/embed") || (src.Contains("mixdrop.ag") && src.Contains("https://")))
                                                     resultTemp = videoPageUrls[i] + nextLine;
                                                 if (resultTemp != null && !resultTemp.Equals(emptyString))
                                                 {
@@ -311,7 +311,6 @@ namespace Archivebate_Scraper
             {
                 _drivers.ForEach(driver =>
                 {
-                    driver?.Close();
                     driver?.Quit();
                     foreach (Process P in Process.GetProcessesByName("chromedriver"))
                         P.Kill();
