@@ -11,12 +11,46 @@ namespace Archivebate_Scraper
         public Form1()
         {
             InitializeComponent();
-            // Rows finish in any order; Tag holds the video's list position so the list stays in page order.
-            listViewSuccess.ListViewItemSorter = Comparer<object>.Create((a, b) => ((int)((ListViewItem)a).Tag!).CompareTo((int)((ListViewItem)b).Tag!));
+            // Rows finish in any order; the Tag's Index is the video's list position so the list stays in page order.
+            listViewSuccess.ListViewItemSorter = Comparer<object>.Create((a, b) => Row((ListViewItem)a).Index.CompareTo(Row((ListViewItem)b).Index));
+            listViewSuccess.SelectedIndexChanged += (_, _) =>
+            {
+                // Fires once per item (Ctrl+A on a long list), so recompute once after the burst.
+                if (_sizeLabelPending)
+                    return;
+                _sizeLabelPending = true;
+                BeginInvoke(() => { _sizeLabelPending = false; UpdateSizeLabel(); });
+            };
         }
 
-        private void AddSuccess(int index, string url, string size = "", string uploaded = "") =>
-            listViewSuccess.Items.Add(new ListViewItem(new[] { url, size, uploaded }) { Tag = index });
+        record SuccessRow(int Index, long? Bytes);
+        static SuccessRow Row(ListViewItem item) => (SuccessRow)item.Tag!;
+
+        private void AddSuccess(int index, string url, long? bytes = null, string size = "", string uploaded = "") =>
+            listViewSuccess.Items.Add(new ListViewItem(new[] { url, size, uploaded }) { Tag = new SuccessRow(index, bytes) });
+
+        string _totalSizeText = "Total size: -";
+        bool _sizeLabelPending;
+
+        private void SetTotalSizeText(string text)
+        {
+            _totalSizeText = text;
+            UpdateSizeLabel();
+        }
+
+        // Total of the whole list, plus the selected rows' total when several are selected.
+        private void UpdateSizeLabel()
+        {
+            var selected = listViewSuccess.SelectedItems.Cast<ListViewItem>().Select(Row).ToList();
+            string text = _totalSizeText;
+            if (selected.Count >= 2)
+            {
+                int unknown = selected.Count(row => row.Bytes == null);
+                text += $"   |   Selected: {ArchivebateClient.FormatSize(selected.Sum(row => row.Bytes ?? 0))} ({selected.Count} videos"
+                    + (unknown > 0 ? $", {unknown} of unknown size)" : ")");
+            }
+            labelTotalSize.Text = text;
+        }
 
         // Ctrl+C copies the selected URLs (all of them when none is selected), one per line; Ctrl+A selects all.
         private void listViewSuccess_KeyDown(object? sender, KeyEventArgs e)
@@ -72,7 +106,7 @@ namespace Archivebate_Scraper
             // Each run starts a fresh list, so the total size below matches what is shown.
             listViewSuccess.Items.Clear();
             textBoxFailURLs.Clear();
-            labelTotalSize.Text = "Total size: -";
+            SetTotalSizeText("Total size: -");
             try
             {
                 await ScrapeAsync(id, pageFrom, pageTo, counterCount, checkBoxOnlyPageURL.Checked ? 0 : scraperCount, CTS.Token);
@@ -135,14 +169,14 @@ namespace Archivebate_Scraper
                 for (int i = 0; i < total; i++)
                     AddSuccess(i, videoPageUrls[i]);
                 listViewSuccess.EndUpdate();
-                labelTotalSize.Text = "Total size: - (video pages are not opened in \"Page URL only\" mode)";
+                SetTotalSizeText("Total size: - (video pages are not opened in \"Page URL only\" mode)");
             }
             else
             {
                 int videosDone = 0, unknownSizes = 0;
                 long totalBytes = 0;
-                void ShowTotalSize() => labelTotalSize.Text = $"Total size: {ArchivebateClient.FormatSize(totalBytes)} ({success} videos"
-                    + (unknownSizes > 0 ? $", {unknownSizes} of unknown size)" : ")");
+                void ShowTotalSize() => SetTotalSizeText($"Total size: {ArchivebateClient.FormatSize(totalBytes)} ({success} videos"
+                    + (unknownSizes > 0 ? $", {unknownSizes} of unknown size)" : ")"));
 
                 await Parallel.ForEachAsync(videoPageUrls.Select((url, index) => (url, index)),
                     new ParallelOptions { MaxDegreeOfParallelism = scraperCount, CancellationToken = ct },
@@ -186,7 +220,7 @@ namespace Archivebate_Scraper
                         OnUI(() =>
                         {
                             if (ok)
-                                AddSuccess(video.index, video.url, size is long b ? ArchivebateClient.FormatSize(b) : "?", page?.Uploaded?.ToString("yyyy-MM-dd") ?? "?");
+                                AddSuccess(video.index, video.url, size, size is long b ? ArchivebateClient.FormatSize(b) : "?", page?.Uploaded?.ToString("yyyy-MM-dd") ?? "?");
                             else
                                 textBoxFailURLs.AppendText((src == null ? video.url : $"{video.url} (unsupported player: {src})") + Environment.NewLine);
                             SetProgress(50 + done * 50 / total);
