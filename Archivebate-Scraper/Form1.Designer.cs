@@ -40,7 +40,6 @@
             labelResult = new Label();
             label4 = new Label();
             textBoxCounterCount = new TextBox();
-            checkBoxHeadless = new CheckBox();
             label5 = new Label();
             textBoxScraperCount = new TextBox();
             tableLayoutPanel1 = new TableLayoutPanel();
@@ -83,6 +82,7 @@
             textBoxPageFrom.Size = new Size(125, 27);
             textBoxPageFrom.TabIndex = 5;
             textBoxPageFrom.Text = "1";
+            textBoxPageFrom.TextChanged += textBoxPageFrom_TextChanged;
             textBoxPageFrom.KeyDown += textBoxOnlyNum_KeyDown;
             textBoxPageFrom.KeyPress += textBoxOnlyNum_KeyPress;
             // 
@@ -92,6 +92,8 @@
             textBoxPageTo.Name = "textBoxPageTo";
             textBoxPageTo.Size = new Size(125, 27);
             textBoxPageTo.TabIndex = 1;
+            textBoxPageTo.Text = "2";
+            textBoxPageTo.TextChanged += textBoxPageTo_TextChanged;
             textBoxPageTo.KeyDown += textBoxOnlyNum_KeyDown;
             textBoxPageTo.KeyPress += textBoxOnlyNum_KeyPress;
             // 
@@ -162,18 +164,6 @@
             textBoxCounterCount.TextChanged += textBoxCounterCount_TextChanged;
             textBoxCounterCount.KeyDown += textBoxOnlyNum_KeyDown;
             textBoxCounterCount.KeyPress += textBoxOnlyNum_KeyPress;
-            // 
-            // checkBoxHeadless
-            // 
-            checkBoxHeadless.AutoSize = true;
-            checkBoxHeadless.Checked = true;
-            checkBoxHeadless.CheckState = CheckState.Checked;
-            checkBoxHeadless.Location = new Point(12, 77);
-            checkBoxHeadless.Name = "checkBoxHeadless";
-            checkBoxHeadless.Size = new Size(91, 24);
-            checkBoxHeadless.TabIndex = 6;
-            checkBoxHeadless.Text = "Headless";
-            checkBoxHeadless.UseVisualStyleBackColor = true;
             // 
             // label5
             // 
@@ -260,7 +250,6 @@
             ClientSize = new Size(495, 664);
             Controls.Add(checkBoxOnlyPageURL);
             Controls.Add(tableLayoutPanel1);
-            Controls.Add(checkBoxHeadless);
             Controls.Add(textBoxScraperCount);
             Controls.Add(label5);
             Controls.Add(textBoxCounterCount);
@@ -297,7 +286,6 @@
         private Label labelResult;
         private Label label4;
         private TextBox textBoxCounterCount;
-        private CheckBox checkBoxHeadless;
         private Label label5;
         private TextBox textBoxScraperCount;
         private TableLayoutPanel tableLayoutPanel1;

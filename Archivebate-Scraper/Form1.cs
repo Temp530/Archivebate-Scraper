@@ -1,323 +1,155 @@
-using OpenQA.Selenium;
-using OpenQA.Selenium.Chrome;
-using OpenQA.Selenium.Support.UI;
-using SeleniumExtras.WaitHelpers;
 using System.Diagnostics;
 using System.Media;
-using Keys = System.Windows.Forms.Keys;
 
 namespace Archivebate_Scraper
 {
     public partial class Form1 : Form
     {
-        protected ChromeOptions _options = null;
-        protected List<ChromeDriver> _drivers = new List<ChromeDriver>();
-        ChromeDriverService _driverService = ChromeDriverService.CreateDefaultService();
-        CancellationTokenSource CTS;
-
-        string baseUrl = "https://www.archivebate.com/profile/";
-        string href = "href";
-        string pageOption = "?page=";
-        string nextLine = "\n";
-        string emptyString = "";
-
-        private delegate void TextSafeDelegate(string text);
-        private void AddSuccessTextBoxSafe(string text)
-        {
-            if (textBoxSuccessURLs.InvokeRequired)
-            {
-                TextSafeDelegate del = new TextSafeDelegate(AddSuccessTextBoxSafe);
-                textBoxSuccessURLs.Invoke(del, text);
-            }
-            else
-            {
-                textBoxSuccessURLs.Text += text;
-            }
-        }
-        private void AddFailTextBoxSafe(string text)
-        {
-            if (textBoxFailURLs.InvokeRequired)
-            {
-                TextSafeDelegate del = new TextSafeDelegate(AddFailTextBoxSafe);
-                textBoxFailURLs.Invoke(del, text);
-            }
-            else
-            {
-                textBoxFailURLs.Text += text;
-            }
-        }
-        private void UpdateResultLabelSafe(string text)
-        {
-            if (labelResult.InvokeRequired)
-            {
-                TextSafeDelegate del = new TextSafeDelegate(UpdateResultLabelSafe);
-                labelResult.Invoke(del, text);
-            }
-            else
-            {
-                labelResult.Text = text;
-            }
-        }
+        readonly ArchivebateClient _client = new();
+        readonly CancellationTokenSource CTS = new();
 
         public Form1()
         {
             InitializeComponent();
-            CTS = new CancellationTokenSource();
         }
 
-        private void buttonDownload_Click(object sender, EventArgs e)
+        // Queued, not blocking, so parallel requests never wait on the UI thread.
+        private void OnUI(Action action)
         {
+            if (IsHandleCreated && !IsDisposed)
+                BeginInvoke(action);
+        }
 
-            int successCount = 0;
-            int failCount = 0;
-            Task.Run(() =>
+        // Only moves forward, since parallel updates can arrive out of order. Windows animates a growing bar
+        // (it lags and looks unfinished at "Done") but draws a shrinking one at once, so step past and back.
+        private void SetProgress(int value)
+        {
+            if (value <= progressBar1.Value)
+                return;
+            progressBar1.Maximum = 101;
+            progressBar1.Value = value + 1;
+            progressBar1.Value = value;
+            progressBar1.Maximum = 100;
+        }
+
+        private async void buttonDownload_Click(object sender, EventArgs e)
+        {
+            // Validate on the UI thread before starting: blank or 0 makes no page range or parallel count.
+            string id = textBoxID.Text.Trim();
+            int scraperCount = 0;
+            if (id.Length == 0 || !int.TryParse(textBoxPageFrom.Text, out int pageFrom) || !int.TryParse(textBoxPageTo.Text, out int pageTo)
+                || !int.TryParse(textBoxCounterCount.Text, out int counterCount)
+                || pageFrom < 1 || pageTo < pageFrom || counterCount < 1
+                || (!checkBoxOnlyPageURL.Checked && (!int.TryParse(textBoxScraperCount.Text, out scraperCount) || scraperCount < 1)))
             {
-                var updateProgress = new Progress<int>(value =>
+                MessageBox.Show("Enter the ID, and every number as 1 or more, with the first page not after the last page.");
+                return;
+            }
+
+            buttonDownload.Enabled = false;
+            progressBar1.Value = 0;
+            try
+            {
+                await ScrapeAsync(id, pageFrom, pageTo, counterCount, checkBoxOnlyPageURL.Checked ? 0 : scraperCount, CTS.Token);
+            }
+            catch (OperationCanceledException)
+            {
+                return; // the form is closing
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
+                MessageBox.Show("Scraping stopped: " + ex.Message);
+            }
+            buttonDownload.Enabled = true;
+        }
+
+        // scraperCount 0 means "Page URL only": list the video pages without opening them.
+        private async Task ScrapeAsync(string id, int pageFrom, int pageTo, int counterCount, int scraperCount, CancellationToken ct)
+        {
+            int success = 0, fail = 0, total = 0;
+            void ShowResult() => labelResult.Text = $"Success: {success} / Fail: {fail} / Total: {total}";
+
+            int pageCount = pageTo - pageFrom + 1, pagesDone = 0;
+            labelResult.Text = $"Loading pages: 0 / {pageCount}";
+            await _client.WarmUpAsync(ct);
+
+            // Pages load in parallel but results keep page order.
+            var pages = new List<string>[pageCount];
+            await Parallel.ForEachAsync(Enumerable.Range(pageFrom, pageCount),
+                new ParallelOptions { MaxDegreeOfParallelism = counterCount, CancellationToken = ct },
+                async (page, token) =>
                 {
-                    if (progressBar1.InvokeRequired)
+                    try
                     {
-                        progressBar1.Invoke(new Action(() => progressBar1.Value = Math.Clamp(value, progressBar1.Minimum, progressBar1.Maximum)));
-                        return;
+                        pages[page - pageFrom] = await _client.GetVideoPageUrlsAsync(id, page, token);
                     }
-                    progressBar1.Value = Math.Clamp(value, progressBar1.Minimum, progressBar1.Maximum);
+                    catch (Exception ex) when (!token.IsCancellationRequested)
+                    {
+                        Debug.WriteLine(ex);
+                        pages[page - pageFrom] = new();
+                        OnUI(() => textBoxFailURLs.AppendText(ArchivebateClient.ProfilePageUrl(id, page) + Environment.NewLine));
+                    }
+                    int done = Interlocked.Increment(ref pagesDone);
+                    OnUI(() =>
+                    {
+                        SetProgress(done * 50 / pageCount);
+                        labelResult.Text = $"Loading pages: {done} / {pageCount}";
+                    });
                 });
-                var addProgress = new Progress<int>(value =>
-                {
-                    int result = progressBar1.Value + value;
-                    result = Math.Clamp(result, progressBar1.Minimum, progressBar1.Maximum);
-                    if (progressBar1.InvokeRequired)
+
+            List<string> videoPageUrls = pages.SelectMany(p => p).Distinct().ToList();
+            total = videoPageUrls.Count;
+            SetProgress(50);
+            ShowResult();
+
+            if (scraperCount == 0)
+            {
+                success = total;
+                textBoxSuccessURLs.AppendText(string.Concat(videoPageUrls.Select(url => url + Environment.NewLine)));
+            }
+            else
+            {
+                int videosDone = 0;
+                await Parallel.ForEachAsync(videoPageUrls,
+                    new ParallelOptions { MaxDegreeOfParallelism = scraperCount, CancellationToken = ct },
+                    async (url, token) =>
                     {
-                        progressBar1.Invoke(new Action(() => progressBar1.Value = result));
-                        return;
-                    }
-                    progressBar1.Value = result;
-                });
-
-                //드라이버 초기화
-                _driverService.HideCommandPromptWindow = true;
-                _options = new ChromeOptions();
-                if (checkBoxHeadless.Checked)
-                {
-                    _options.AddArgument("--disable-gpu");
-                    _options.AddArgument("--headless");
-                }
-                _options.AddArgument("--window-size=1280x720");
-                _options.AddArgument("--disable-infobars");
-                _options.AddArgument("--disable-extensions");
-                _options.AddArgument("--blink-settings=imagesEnabled=false");
-
-                //캐싱용 변수
-                List<string> videoPageUrls = new List<string>();
-                List<string> videoFileUrls = new List<string>();
-                By XPathVerify = By.XPath("//*[@id=\"verify\"]");
-                By XPathLastElement = By.XPath("//*[@id=\"app\"]/main/section/div/div/div/div[2]/div[3]/section[20]");
-                By VideoElement = By.ClassName("video_item");
-
-                int destinationPage = int.Parse(textBoxPageTo.Text);
-                int totalPageCount = destinationPage - int.Parse(textBoxPageFrom.Text) + 1;
-                int CounterCount = int.Parse(textBoxCounterCount.Text);
-                int ScraperCount = int.Parse(textBoxScraperCount.Text);
-
-                int quota = totalPageCount / CounterCount;
-
-                List<Task> workers = new List<Task>();
-                try
-                {
-                    for (int workerIndex = 0; workerIndex < CounterCount; workerIndex++)
-                    {
-                        int tempIndex = workerIndex;
-                        workers.Add(Task.Run(() =>
+                        string? src = null;
+                        try
                         {
-                            ChromeDriver _driver = new ChromeDriver(_driverService, _options);
-                            _drivers.Add(_driver);
-                            _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(3);
-
-                            int workersStartPage = tempIndex * quota + 1;
-                            int workersEndPage = Math.Clamp(workersStartPage + quota - 1, workersStartPage, destinationPage);
-                            if (tempIndex.Equals(CounterCount - 1))
-                                workersEndPage = destinationPage;
-                            for (int page = workersStartPage; page <= workersEndPage; page++)
-                            {
-                                if (CTS.IsCancellationRequested)
-                                    return;
-                                _driver.Navigate().GoToUrl(baseUrl + textBoxID.Text + pageOption + page);
-                                /*if (page == workersStartPage)
-                                    _driver.FindElement(XPathVerify).Click();*/
-                                WebDriverWait wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(5));
-                                try
-                                {
-                                    wait.Until(ExpectedConditions.ElementIsVisible(XPathLastElement));
-                                }
-                                catch (WebDriverTimeoutException)
-                                {
-                                    //Last Page
-                                }
-
-                                var elements = _driver.FindElements(VideoElement);
-                                for (int i = 1; i <= elements.Count; i++)
-                                {
-                                    if (CTS.IsCancellationRequested)
-                                        return;
-                                    lock (videoPageUrls)
-                                        videoPageUrls.Add(_driver.FindElement(By.XPath($"//*[@id=\"app\"]/main/section/div/div/div/div[2]/section/div[3]/section[{i}]/div[2]/a")).GetAttribute(href));
-                                }
-                                int tempPage = page;
-                                int tempworkersEndPage = workersEndPage;
-                                Task.Run(() => ((IProgress<int>)addProgress).Report((int)((float)tempPage / tempworkersEndPage * (50f / CounterCount))), CTS.Token);
-                            }
-                        }, CTS.Token));
-                    }
-                    var workerArray = workers.ToArray();
-                    Task.WaitAll(workerArray);
-                }
-                finally
-                {
-                    workers.ForEach(worker => worker.Dispose());
-                    workers.Clear();
-                    UpdateResultLabelSafe($"Success: {successCount} / Fail: {failCount} / Total: {videoPageUrls.Count}");
-                }
-                Task.Run(() => ((IProgress<int>)updateProgress).Report(50), CTS.Token);
-
-                try
-                {
-                    if (checkBoxOnlyPageURL.Checked)
-                    {
-                        for (int i = 0; i < videoPageUrls.Count; i++)
-                        {
-                            AddSuccessTextBoxSafe(videoPageUrls[i] + nextLine);
-
-                            Task.Run(() => ((IProgress<int>)updateProgress).Report(50 + (i / videoPageUrls.Count * 50)), CTS.Token);
+                            src = await _client.GetPlayerSourceAsync(url, token);
                         }
-                        Task.Run(() => ((IProgress<int>)updateProgress).Report(100), CTS.Token);
-                        return;
-                    }
+                        catch (Exception ex) when (!token.IsCancellationRequested)
+                        {
+                            Debug.WriteLine(ex);
+                        }
+                        // No player means the video was deleted; other players can't be resolved without a browser, so they are reported.
+                        bool ok = src != null && ArchivebateClient.IsSupportedPlayer(src);
+                        if (ok)
+                            Interlocked.Increment(ref success);
+                        else
+                            Interlocked.Increment(ref fail);
+                        string line = (ok || src == null ? url : $"{url} (unsupported player: {src})") + Environment.NewLine;
+                        int done = Interlocked.Increment(ref videosDone);
+                        OnUI(() =>
+                        {
+                            (ok ? textBoxSuccessURLs : textBoxFailURLs).AppendText(line);
+                            SetProgress(50 + done * 50 / total);
+                            ShowResult();
+                        });
+                    });
+            }
 
-                    quota = videoPageUrls.Count / ScraperCount;
-                    if (quota < 1)
-                    {
-                        quota = 1;
-                        ScraperCount = videoPageUrls.Count;
-                    }
-
-                    while (_drivers.Count < ScraperCount)
-                    {
-                        ChromeDriver _driver = new ChromeDriver(_driverService, _options);
-                        _drivers.Add(_driver);
-                    }
-
-                    for (int workerIndex = 0; workerIndex < ScraperCount; workerIndex++)
-                    {
-                        int tempIndex = workerIndex;
-                        workers.Add(
-                            Task.Run(async () =>
-                            {
-                                await Task.Run(async () =>
-                                {
-                                    int workersStartIndex = tempIndex * quota;
-                                    int workersEndIndex = Math.Clamp(workersStartIndex + quota, 0, videoPageUrls.Count);//-1
-                                    if (tempIndex.Equals(ScraperCount - 1))
-                                        workersEndIndex = videoPageUrls.Count;
-
-                                    for (int i = workersStartIndex; i < workersEndIndex; i++)
-                                    {
-                                        WebDriverWait iframeWait = new WebDriverWait(_drivers[tempIndex], TimeSpan.FromSeconds(50));
-                                        try
-                                        {
-                                            try
-                                            {
-                                                _drivers[tempIndex].Navigate().GoToUrl(videoPageUrls[i]);
-                                            }
-                                            catch (WebDriverException e)
-                                            {
-                                                Debug.WriteLine(e);
-                                                lock (this)
-                                                    failCount++;
-                                                AddFailTextBoxSafe(videoPageUrls[i] + nextLine);
-                                            }
-                                            IWebElement button = null;
-                                            try
-                                            {
-                                                string src = iframeWait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//*[@id=\"app\"]/main/section/div/div/div[2]/div/div[1]/div[1]/iframe"))).GetAttribute("src");
-                                                string resultTemp = null;
-                                                if (src.Contains("https://www.archivebate.com/embed") || (src.Contains("mixdrop.ag") && src.Contains("https://")))
-                                                    resultTemp = videoPageUrls[i] + nextLine;
-                                                if (resultTemp != null && !resultTemp.Equals(emptyString))
-                                                {
-                                                    lock (this)
-                                                        successCount++;
-                                                    AddSuccessTextBoxSafe(resultTemp);
-                                                    continue;
-                                                }
-                                                iframeWait.Until(ExpectedConditions.FrameToBeAvailableAndSwitchToIt(By.XPath("//*[@id=\"app\"]/main/section/div/div/div[2]/div/div[1]/div[1]/iframe")));
-                                                button = iframeWait.Until(ExpectedConditions.ElementToBeClickable(By.ClassName("vjs-big-play-button")));
-                                            }
-                                            catch (WebDriverTimeoutException)
-                                            {
-                                                lock (this)
-                                                    failCount++;
-                                                AddFailTextBoxSafe(videoPageUrls[i] + nextLine);
-                                                continue;
-                                            }
-                                            _drivers[tempIndex].ExecuteScript("arguments[0].click();", button);
-
-                                            var waitForElement = iframeWait.Until(ExpectedConditions.ElementExists(By.ClassName("vjs-tech")));
-
-                                            lock (this)
-                                                successCount++;
-                                            AddSuccessTextBoxSafe(iframeWait.Until<string>(c =>
-                                            {
-                                                string result = waitForElement.GetAttribute("src");
-                                                if (result != null && !result.Equals(emptyString))
-                                                {
-                                                    if (result.Contains("video-delivery.net"))
-                                                        return videoPageUrls[i];
-                                                    else
-                                                        return result;
-                                                }
-                                                else
-                                                    return null;
-                                            }) + nextLine);
-                                        }
-                                        finally
-                                        {
-                                            Task.Run(() => ((IProgress<int>)updateProgress).Report(50 + (int)((float)(successCount + failCount) / videoPageUrls.Count * 50f)), CTS.Token);
-                                            UpdateResultLabelSafe($"Success: {successCount} / Fail: {failCount} / Total: {videoPageUrls.Count}");
-                                        }
-                                    }
-                                }, CTS.Token);
-                                _drivers[tempIndex]?.Close();
-                            }, CTS.Token)
-                        );
-                    }
-                    var workerArray = workers.ToArray();
-                    Task.WaitAll(workerArray);
-                }
-                finally
-                {
-                    workers.ForEach(worker => worker.Dispose());
-                    workers.Clear();
-                    SystemSounds.Beep.Play();
-                    MessageBox.Show("Done");
-                    Task.Run(() => ((IProgress<int>)updateProgress).Report(100), CTS.Token);
-                    UpdateResultLabelSafe($"Success: {successCount} / Fail: {failCount} / Total: {videoPageUrls.Count}");
-                }
-            }, CTS.Token);
+            SetProgress(100);
+            ShowResult();
+            SystemSounds.Beep.Play();
+            MessageBox.Show("Done");
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             CTS.Cancel();
-            Task.Run(() =>
-            {
-                _drivers.ForEach(driver =>
-                {
-                    driver?.Quit();
-                    foreach (Process P in Process.GetProcessesByName("chromedriver"))
-                        P.Kill();
-                });
-                _driverService?.Dispose();
-            });
-
         }
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
@@ -327,10 +159,7 @@ namespace Archivebate_Scraper
 
         private void textBoxCounterCount_TextChanged(object sender, EventArgs e)
         {
-            int pageCounterCount = int.Parse(textBoxCounterCount.Text);
-            int lastPage = int.Parse(textBoxPageTo.Text);
-            if (pageCounterCount > lastPage)
-                textBoxCounterCount.Text = textBoxPageTo.Text;
+            UpdatePageCounter();
         }
         // Boolean flag used to determine when a character other than a number is entered.
         private bool nonNumberEntered = false;
@@ -371,6 +200,28 @@ namespace Archivebate_Scraper
                 e.Handled = true;
                 MessageBox.Show("Only numeric input is accepted");
             }
+        }
+
+        private void textBoxPageFrom_TextChanged(object sender, EventArgs e)
+        {
+            UpdatePage();
+        }
+
+        private void textBoxPageTo_TextChanged(object sender, EventArgs e)
+        {
+            UpdatePage();
+        }
+        public void UpdatePage()
+        {
+            // Skip while a box is blank (user is mid-edit) instead of throwing FormatException.
+            if (int.TryParse(textBoxPageFrom.Text, out int pageFrom) && int.TryParse(textBoxPageTo.Text, out int pageTo) && pageTo < pageFrom)
+                textBoxPageTo.Text = textBoxPageFrom.Text;
+            UpdatePageCounter();
+        }
+        public void UpdatePageCounter()
+        {
+            if (int.TryParse(textBoxCounterCount.Text, out int pageCounterCount) && int.TryParse(textBoxPageTo.Text, out int lastPage) && pageCounterCount > lastPage)
+                textBoxCounterCount.Text = textBoxPageTo.Text;
         }
     }
 }
