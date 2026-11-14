@@ -34,7 +34,11 @@
             textBoxPageFrom = new TextBox();
             textBoxPageTo = new TextBox();
             buttonDownload = new Button();
-            textBoxSuccessURLs = new TextBox();
+            listViewSuccess = new ListView();
+            columnHeaderUrl = new ColumnHeader();
+            columnHeaderSize = new ColumnHeader();
+            columnHeaderDate = new ColumnHeader();
+            labelTotalSize = new Label();
             progressBar1 = new ProgressBar();
             label3 = new Label();
             labelResult = new Label();
@@ -107,16 +111,45 @@
             buttonDownload.UseVisualStyleBackColor = true;
             buttonDownload.Click += buttonDownload_Click;
             // 
-            // textBoxSuccessURLs
-            // 
-            textBoxSuccessURLs.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            textBoxSuccessURLs.Location = new Point(69, 3);
-            textBoxSuccessURLs.Multiline = true;
-            textBoxSuccessURLs.Name = "textBoxSuccessURLs";
-            textBoxSuccessURLs.ReadOnly = true;
-            textBoxSuccessURLs.ScrollBars = ScrollBars.Both;
-            textBoxSuccessURLs.Size = new Size(399, 193);
-            textBoxSuccessURLs.TabIndex = 8;
+            // listViewSuccess
+            //
+            listViewSuccess.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            listViewSuccess.Columns.AddRange(new ColumnHeader[] { columnHeaderUrl, columnHeaderSize, columnHeaderDate });
+            listViewSuccess.FullRowSelect = true;
+            listViewSuccess.GridLines = true;
+            listViewSuccess.Location = new Point(69, 3);
+            listViewSuccess.Name = "listViewSuccess";
+            listViewSuccess.Size = new Size(664, 173);
+            listViewSuccess.TabIndex = 8;
+            listViewSuccess.UseCompatibleStateImageBehavior = false;
+            listViewSuccess.View = View.Details;
+            listViewSuccess.KeyDown += listViewSuccess_KeyDown;
+            //
+            // columnHeaderUrl
+            //
+            columnHeaderUrl.Text = "URL";
+            columnHeaderUrl.Width = 400;
+            //
+            // columnHeaderSize
+            //
+            columnHeaderSize.Text = "Size";
+            columnHeaderSize.TextAlign = HorizontalAlignment.Right;
+            columnHeaderSize.Width = 110;
+            //
+            // columnHeaderDate
+            //
+            columnHeaderDate.Text = "Upload date";
+            columnHeaderDate.Width = 120;
+            //
+            // labelTotalSize
+            //
+            labelTotalSize.AutoSize = true;
+            labelTotalSize.Location = new Point(69, 179);
+            labelTotalSize.Margin = new Padding(3, 0, 3, 3);
+            labelTotalSize.Name = "labelTotalSize";
+            labelTotalSize.Size = new Size(150, 20);
+            labelTotalSize.TabIndex = 11;
+            labelTotalSize.Text = "Total size: -";
             // 
             // progressBar1
             // 
@@ -190,16 +223,18 @@
             tableLayoutPanel1.ColumnCount = 2;
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle());
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
-            tableLayoutPanel1.Controls.Add(textBoxSuccessURLs, 1, 0);
-            tableLayoutPanel1.Controls.Add(textBoxFailURLs, 1, 1);
-            tableLayoutPanel1.Controls.Add(label7, 0, 1);
+            tableLayoutPanel1.Controls.Add(listViewSuccess, 1, 0);
+            tableLayoutPanel1.Controls.Add(labelTotalSize, 1, 1);
+            tableLayoutPanel1.Controls.Add(textBoxFailURLs, 1, 2);
+            tableLayoutPanel1.Controls.Add(label7, 0, 2);
             tableLayoutPanel1.Controls.Add(label6, 0, 0);
             tableLayoutPanel1.Location = new Point(12, 244);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
-            tableLayoutPanel1.RowCount = 2;
+            tableLayoutPanel1.RowCount = 3;
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+            tableLayoutPanel1.RowStyles.Add(new RowStyle());
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            tableLayoutPanel1.Size = new Size(471, 398);
+            tableLayoutPanel1.Size = new Size(736, 398);
             tableLayoutPanel1.TabIndex = 10;
             // 
             // textBoxFailURLs
@@ -247,7 +282,7 @@
             // 
             AutoScaleDimensions = new SizeF(9F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(495, 664);
+            ClientSize = new Size(760, 664);
             Controls.Add(checkBoxOnlyPageURL);
             Controls.Add(tableLayoutPanel1);
             Controls.Add(textBoxScraperCount);
@@ -280,7 +315,11 @@
         private TextBox textBoxPageFrom;
         private TextBox textBoxPageTo;
         private Button buttonDownload;
-        private TextBox textBoxSuccessURLs;
+        private ListView listViewSuccess;
+        private ColumnHeader columnHeaderUrl;
+        private ColumnHeader columnHeaderSize;
+        private ColumnHeader columnHeaderDate;
+        private Label labelTotalSize;
         private ProgressBar progressBar1;
         private Label label3;
         private Label labelResult;
